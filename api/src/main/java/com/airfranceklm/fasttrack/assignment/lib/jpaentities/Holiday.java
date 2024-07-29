@@ -1,15 +1,12 @@
 package com.airfranceklm.fasttrack.assignment.lib.jpaentities;
 
+import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -20,14 +17,26 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(name = "holidays")
 public class Holiday {
     @Id
-    private final @NonNull UUID uuid;
+    @Column(name = "holiday_id", nullable = false)
+    private final @NonNull UUID holidayId;
 
     @Column(name = "label", nullable = false)
-    private final @NonNull String label;
+    private @NonNull String label;
 
-    @Column(name = "start", nullable = false)
-    private @NonNull Instant start;
+    @ManyToOne(
+        targetEntity = Employee.class,
+        fetch = LAZY,
+        cascade = {}
+    )
+    @JoinColumn(name = "employee_id", nullable = false)
+    private @NonNull Employee employee;
 
-    @Column(name = "end", nullable = false)
-    private @NonNull Instant end;
+    @Column(name = "start_of_holiday", nullable = false)
+    private @NonNull Instant startOfHoliday;
+
+    @Column(name = "end_of_holiday", nullable = false)
+    private @NonNull Instant endOfHoliday;
+
+    @Column(name = "status", nullable = false)
+    private final @NonNull HolidayStatus status;
 }
