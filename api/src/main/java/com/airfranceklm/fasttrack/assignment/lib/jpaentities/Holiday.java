@@ -20,7 +20,6 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(name = "holidays")
 public class Holiday {
     @Id
-    @Type(type = "pg-uuid")
     private final @NonNull UUID uuid;
 
     @Column(name = "label", nullable = false)
