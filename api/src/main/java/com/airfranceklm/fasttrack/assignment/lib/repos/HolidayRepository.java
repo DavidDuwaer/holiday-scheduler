@@ -55,7 +55,7 @@ public class HolidayRepository {
         @NonNull Consumer<Holiday> doWork,
         @NonNull Function<JPAQuery<Holiday>, JPAQuery<Holiday>> where
     ) {
-        final var subject = find(where);
+        val subject = find(where);
         doWork.accept(subject);
         assertSatisfiesConstraints(subject);
         entityManager.persist(subject);
