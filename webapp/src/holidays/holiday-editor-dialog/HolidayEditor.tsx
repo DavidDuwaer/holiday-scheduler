@@ -35,7 +35,7 @@ export const HolidayEditor: FC<Props> =
                     ? new Date(initialValue.startOfHoliday)
                     : new Date(),
             ),
-            []
+            [initialValue?.startOfHoliday]
         )
         const initialEndOfHoliday = useMemo(
             () => toDateString(
@@ -43,7 +43,7 @@ export const HolidayEditor: FC<Props> =
                     ? new Date(initialValue.endOfHoliday)
                     : new Date(),
             ),
-            []
+            [initialValue?.endOfHoliday]
         )
         const initialLabel = useMemo(() => initialValue?.label, [])
 
@@ -66,24 +66,25 @@ export const HolidayEditor: FC<Props> =
         )
         const holiday5DaysAhead = useMemo(
             () => start.getTime() - lastMidnight >= 5 * MS_PER_DAY,
-            [start, now]
+            [start, lastMidnight]
         )
         const endNotBeforeStart = useMemo(
             () => end.getTime() >= start.getTime(),
             [end, start]
         )
         const {holidays} = useHolidaysContext()
+        const [holidaysOnDialogOpen, setHolidaysOnDialogOpen] = useState<Holiday[]>()
         const noOverlapWithAnyOtherHoliday = useMemo(
-            () => !holidays?.some(holiday => {
+            () => !holidaysOnDialogOpen?.some(holiday => {
                 const otherStart = interpretLocalDateInBrowserTimeZone(holiday.startOfHoliday).getTime()
                 const otherEnd = interpretLocalDateInBrowserTimeZone(holiday.endOfHoliday).getTime()
                 return holiday.holidayId !== initialValue?.holidayId
                     && otherEnd > start.getTime() && otherStart < end.getTime()
             }),
-            []
+            [end, holidaysOnDialogOpen, initialValue?.holidayId, start]
         )
         const threeDaysApartFromOtherHolidaysOfSameEmployee = useMemo(
-            () => !holidays?.some(holiday => {
+            () => !holidaysOnDialogOpen?.some(holiday => {
                 const threeDays = 3 * MS_PER_DAY
                 const otherStart = interpretLocalDateInBrowserTimeZone(holiday.startOfHoliday).getTime()
                 const otherEnd = interpretLocalDateInBrowserTimeZone(holiday.endOfHoliday).getTime()
@@ -91,7 +92,7 @@ export const HolidayEditor: FC<Props> =
                     && holiday.employeeId === employeeId
                     && otherEnd > (start.getTime() - threeDays) && otherStart < (end.getTime() + threeDays)
             }),
-            []
+            [employeeId, end, holidaysOnDialogOpen, initialValue?.holidayId, start]
         )
         const [showValidation, setShowValidation] = useState(false)
         useEffect(
@@ -102,9 +103,10 @@ export const HolidayEditor: FC<Props> =
                     setStartOfHoliday(initialStartOfHoliday)
                     setEndOfHoliday(initialEndOfHoliday)
                     setLabel(initialLabel)
+                    setHolidaysOnDialogOpen(holidays)
                 }
             },
-            []
+            [dialogOpen, holidays, initialEmployeeId, initialEndOfHoliday, initialLabel, initialStartOfHoliday]
         )
         const onSubmit = useCallback(
             (e: React.FormEvent) => {
@@ -138,7 +140,7 @@ export const HolidayEditor: FC<Props> =
                 })
                 setDialogOpen(false)
             },
-            [onSave, employeeId, label, holiday5DaysAhead, endNotBeforeStart, noOverlapWithAnyOtherHoliday, threeDaysApartFromOtherHolidaysOfSameEmployee, startOfHoliday, endOfHoliday],
+            [employeeId, label, holiday5DaysAhead, endNotBeforeStart, noOverlapWithAnyOtherHoliday, threeDaysApartFromOtherHolidaysOfSameEmployee, onSave, initialValue?.holidayId, start, end, setDialogOpen],
         )
         const setDialogOpenToFalse = useCallback(
             () => setDialogOpen(false),
