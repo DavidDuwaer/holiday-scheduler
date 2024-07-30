@@ -7,19 +7,18 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
 import static com.airfranceklm.fasttrack.assignment.svc.holiday.delete.ConstraintChecker.assertHolidayIsAtLeastFiveWorkingDaysInFuture;
 
-@org.springframework.stereotype.Controller
-@RequestMapping("/holidays")
+@RestController
 @RequiredArgsConstructor
 class Controller {
     private final @NonNull HolidayRepository holidayRepository;
 
-    @DeleteMapping
+    @DeleteMapping("/holidays")
     public void delete(@RequestBody @NonNull DeleteRequest request) {
         holidayRepository.delete(
             query -> query.where(QHoliday.holiday.holidayId.eq(request.holidayId)),

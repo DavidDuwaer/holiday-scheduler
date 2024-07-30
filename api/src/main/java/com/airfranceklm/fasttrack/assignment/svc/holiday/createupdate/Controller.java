@@ -9,25 +9,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.UUID;
 
 import static com.airfranceklm.fasttrack.assignment.svc.holiday.createupdate.ConstraintChecker.assertHolidayIsAtLeastFiveWorkingDaysInFuture;
+import static java.time.Instant.now;
 
-@org.springframework.stereotype.Controller
-@RequestMapping("/holidays")
+@RestController
 @RequiredArgsConstructor
 class Controller {
     private final @NonNull HolidayRepository holidayRepository;
     private final @NonNull DAO dao;
     private final @NonNull ConstraintChecker constraintChecker;
 
-    @PostMapping
+    @PostMapping("/holidays")
     public void create(@RequestBody @NonNull CreateRequest request) {
         holidayRepository.create(
             request.holidayId,
+            now(),
             request.label,
             dao.getEmployee(request.employeeId),
             request.startOfHoliday,
@@ -37,7 +38,7 @@ class Controller {
         );
     }
 
-    @PutMapping
+    @PutMapping("/holidays")
     public void update(@RequestBody @NonNull CreateRequest request) {
         holidayRepository.update(
             holiday -> {

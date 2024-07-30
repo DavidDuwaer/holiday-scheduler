@@ -18,10 +18,12 @@ class ConstraintChecker {
     void assertThreeDaysApartFromOtherHolidaysOfEmployee(
         @NonNull Holiday holiday
     ) {
+        val employeeId = holiday.getEmployee().getEmployeeId();
+        val holidayId = holiday.getHolidayId();
         val threeDays = Duration.ofDays(3);
         val threeDaysBefore = holiday.getStartOfHoliday().minus(threeDays);
         val threeDaysAfter = holiday.getEndOfHoliday().plus(threeDays);
-        if (dao.holidaysExist(holiday.getEmployee().getEmployeeId(), threeDaysBefore, threeDaysAfter)) {
+        if (dao.holidaysExist(employeeId, threeDaysBefore, threeDaysAfter, holidayId)) {
             throw new IllegalArgumentException(
                 "Holidays must be three days apart from other holidays by the same employee"
             );
@@ -31,7 +33,7 @@ class ConstraintChecker {
     void assertNotDoesntOverlapWithAnyOtherHoliday(
         @NonNull Holiday holiday
     ) {
-        if (dao.holidaysExist(null, holiday.getStartOfHoliday(), holiday.getEndOfHoliday())) {
+        if (dao.holidaysExist(null, holiday.getStartOfHoliday(), holiday.getEndOfHoliday(), holiday.getHolidayId())) {
             throw new IllegalArgumentException(
                 "Holidays may not overlap with any other holiday"
             );

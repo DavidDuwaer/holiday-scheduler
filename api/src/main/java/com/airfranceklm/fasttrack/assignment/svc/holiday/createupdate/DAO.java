@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import static com.airfranceklm.fasttrack.assignment.lib.jpaentities.QEmployee.employee;
 import static com.airfranceklm.fasttrack.assignment.lib.jpaentities.QHoliday.holiday;
@@ -39,11 +40,13 @@ class DAO {
     public @NonNull Boolean holidaysExist(
         @Nullable String employeeId,
         @NonNull Instant betweenStart,
-        @NonNull Instant beteenEnd
+        @NonNull Instant beteenEnd,
+        @NonNull UUID notHolidayId
     ) {
         var query = queryFactory.selectFrom(holiday)
             .where(holiday.endOfHoliday.after(betweenStart))
-            .where(holiday.startOfHoliday.before(beteenEnd));
+            .where(holiday.startOfHoliday.before(beteenEnd))
+            .where(holiday.holidayId.ne(notHolidayId));
 
         if (nonNull(employeeId)) {
             query = query.where(holiday.employee.employeeId.eq(employeeId));

@@ -20,6 +20,9 @@ public class Holiday {
     @Column(name = "holiday_id", nullable = false)
     private final @NonNull UUID holidayId;
 
+    @Column(name = "created_at", nullable = false)
+    private @NonNull Instant createdAt;
+
     @Column(name = "label", nullable = false)
     private @NonNull String label;
 
